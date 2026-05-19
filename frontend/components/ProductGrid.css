@@ -109,3 +109,14 @@
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
 }
+
+@media (max-width: 576px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+}

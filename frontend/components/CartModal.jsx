@@ -8,49 +8,11 @@ const CartModal = ({ isOpen, onClose, items, onRemove, onUpdateQuantity }) => {
 
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     setIsProcessing(true);
-    
-    try {
-      // For this implementation, we just checkout the first item in the cart.
-      // A full implementation would create a parent order or pass all items.
-      const item = items[0];
-      
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: item.id,
-          quantity: item.quantity,
-          customerName: 'Test User',
-          customerEmail: 'test@example.com'
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Here you would normally open the Razorpay Checkout UI with data.orderId
-        // For now, we simulate a successful payment webhook response
-        await fetch('/api/webhooks/razorpay', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            razorpayOrderId: data.orderId,
-            status: 'SUCCESS'
-          })
-        });
-        
-        setIsProcessing(false);
-        setCheckoutSuccess(true);
-      } else {
-        console.error('Checkout failed:', data.error);
-        setIsProcessing(false);
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      setIsProcessing(false);
-    }
+    // Since items are already being added to the Shopify cart via the /cart/add.js API
+    // in App.jsx, we simply need to redirect the user to the native Shopify checkout.
+    window.location.href = '/checkout';
   };
 
   if (!isOpen) return null;

@@ -7,6 +7,8 @@ import Footer from './components/Footer';
 import CartModal from './components/CartModal';
 import AdminPanel from './components/AdminPanel';
 
+import { fetchProducts, addToCart as shopifyAddToCart } from './utils/shopify';
+
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -14,27 +16,28 @@ function App() {
   const [loadingProducts, setLoadingProducts] = useState(true);
 
   useEffect(() => {
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data);
-        setLoadingProducts(false);
-      })
-      .catch(err => {
-        console.error('Failed to load products:', err);
-        setLoadingProducts(false);
-      });
+    fetchProducts().then(data => {
+      setProducts(data);
+      setLoadingProducts(false);
+    });
   }, []);
 
-  const addToCart = (product) => {
-    setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-    setIsCartOpen(true);
+  const addToCart = async (product) => {
+    try {
+      await shopifyAddToCart(product.id, 1);
+      
+      setCartItems(prev => {
+        const existing = prev.find(item => item.id === product.id);
+        if (existing) {
+          return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+        }
+        return [...prev, { ...product, quantity: 1 }];
+      });
+      setIsCartOpen(true);
+    } catch (err) {
+      console.error('Error adding to Shopify cart:', err);
+      // Optional: show a failure toast to the user here
+    }
   };
 
   const removeFromCart = (productId) => {

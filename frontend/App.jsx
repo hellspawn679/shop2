@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import ProductGrid from './components/ProductGrid';
 import Footer from './components/Footer';
 import CartModal from './components/CartModal';
+import ProductDetail from './components/ProductDetail';
 import AdminPanel from './components/AdminPanel';
 
 import { fetchProducts, addToCart as shopifyAddToCart } from './utils/shopify';
@@ -67,6 +68,7 @@ function App() {
           </main>
         } />
         
+        <Route path="/product/:handle" element={<ProductDetail onAddToCart={addToCart} />} />
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
 

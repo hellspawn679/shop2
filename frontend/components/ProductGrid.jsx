@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './ProductGrid.css';
 
 const ProductGrid = ({ products, onAddToCart }) => {
@@ -14,26 +15,48 @@ const ProductGrid = ({ products, onAddToCart }) => {
         <div className="product-grid">
           {products.map(product => (
             <div key={product.id} className="product-card glass-panel">
-              <div className="product-image-container">
-                <img src={product.image} alt={product.name} className="product-image" />
-                <div className="product-status mono">
-                  [{product.status}]
+              <Link to={`/product/${product.handle}`} className="product-link-wrapper" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                <div className="product-image-container">
+                  <img src={product.image} alt={product.name} className="product-image" />
+                  <div className="product-status mono">
+                    [{product.status}]
+                  </div>
+                  {product.colorCount > 1 && (
+                    <div className="product-color-count mono" style={{ position: 'absolute', bottom: '1rem', left: '1rem', background: 'rgba(0,0,0,0.8)', padding: '0.25rem 0.5rem', fontSize: '0.7rem', color: '#fff', border: '1px solid #333' }}>
+                      [+ {product.colorCount} COLORS]
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              <div className="product-info">
-                <div className="product-type mono">{product.type}</div>
-                <h3 className="product-name">{product.name}</h3>
                 
-                <div className="product-action">
-                  <span className="product-price mono">₹{product.price}</span>
+                <div className="product-info">
+                  <div className="product-type mono">{product.type}</div>
+                  <h3 className="product-name">{product.name}</h3>
+                  
+                  <div className="product-price mono" style={{ marginBottom: '1rem' }}>₹{product.price}</div>
+                </div>
+              </Link>
+              
+              <div className="product-action" style={{ padding: '0 1.5rem 1.5rem' }}>
+                {product.hasVariants ? (
+                  <Link 
+                    to={`/product/${product.handle}`}
+                    className="btn-outline add-to-cart-btn"
+                    style={{ width: '100%', textDecoration: 'none', display: 'inline-block', textAlign: 'center' }}
+                  >
+                    SELECT OPTIONS
+                  </Link>
+                ) : (
                   <button 
                     className="btn-outline add-to-cart-btn"
-                    onClick={() => onAddToCart(product)}
+                    style={{ width: '100%' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onAddToCart(product);
+                    }}
                   >
-                    <ShoppingCart size={18} /> ADD
+                    <ShoppingCart size={18} style={{ marginRight: '0.5rem' }} /> ADD TO CART
                   </button>
-                </div>
+                )}
               </div>
             </div>
           ))}
